@@ -1,0 +1,75 @@
+# Configuration Crypto Portfolio Guard
+
+# Exchange API Configuration
+exchange:
+  name: "binance"
+  api_key: ""  # À remplir avec votre clé API
+  api_secret: ""  # À remplir avec votre secret API
+  testnet: false  # Utiliser le testnet Binance pour les tests
+  sandbox: true  # Mode sandbox par défaut (sans ordres réels)
+
+# Database Configuration
+database:
+  type: "sqlite"  # sqlite ou mysql
+  sqlite:
+    path: "storage/portfolio.db"
+  mysql:
+    host: "localhost"
+    port: 3306
+    user: "root"
+    password: ""
+    database: "crypto_portfolio"
+
+# Portfolio Settings
+portfolio:
+  base_currency: "USDT"  # Devise de référence
+  min_balance_threshold: 10.0  # Balance minimum pour suivre un coin (en USDT)
+  snapshot_interval_hours: 24  # Intervalle de sauvegarde quotidienne
+
+# Rules Configuration (Gestion automatique)
+rules:
+  enabled: false  # Activer/désactiver les règles automatiques
+  profit_threshold_percent: 20.0  # Seuil de gain pour conversion automatique (%)
+  loss_threshold_percent: -10.0  # Seuil de perte pour alerte (%)
+  rebase_enabled: false  # Activer le rebase (remettre à zéro le prix d'ancrage)
+  cooldown_hours: 24  # Cooldown entre deux actions automatiques sur le même coin
+  conversion_percent: 50.0  # Pourcentage de surplus à convertir en stablecoin
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  console: true  # Afficher les logs dans la console
+  file: true  # Sauvegarder les logs dans des fichiers
+  directory: "logs"  # Répertoire des logs
+  rotation: "00:00"  # Rotation à minuit chaque jour
+  retention: "30 days"  # Conserver les logs pendant 30 jours
+  compression: "zip"  # Compression des anciens logs (zip, gz, None)
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+
+# Dashboard Web Configuration
+web:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+  secret_key: ""  # Clé secrète Flask (générer avec: python -c "import secrets; print(secrets.token_hex(16))")
+
+# Notification Configuration
+notifications:
+  email:
+    enabled: false
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    smtp_user: ""
+    smtp_password: ""
+    to_email: "andoh.ezan1@gmail.com"
+  
+  alerts:
+    on_profit_threshold: true  # Alerter quand seuil de profit atteint
+    on_loss_threshold: true  # Alerter quand seuil de perte atteint
+    on_conversion: true  # Alerter lors d'une conversion automatique
+
+# Export Configuration
+export:
+  csv_enabled: true
+  csv_directory: "exports"
+  csv_daily: true  # Export CSV quotidien automatique
