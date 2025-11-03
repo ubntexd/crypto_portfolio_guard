@@ -9,13 +9,37 @@ echo "🔍 Test de la connexion SSH à GitHub..."
 echo ""
 
 # Test de la connexion SSH
-if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+SSH_TEST=$(ssh -T git@github.com 2>&1)
+if echo "$SSH_TEST" | grep -q "successfully authenticated"; then
     echo "✅ Connexion SSH réussie !"
     echo ""
     echo "📦 Push vers GitHub..."
-    git push -u origin main
-    echo ""
-    echo "✅ Push réussi ! Vérifiez sur : https://github.com/ubntexd/crypto_portfolio_guard"
+    
+    # Essayer le push
+    if git push -u origin main 2>&1 | tee /tmp/push_output.txt; then
+        echo ""
+        echo "✅ Push réussi ! Vérifiez sur : https://github.com/ubntexd/crypto_portfolio_guard"
+    else
+        if grep -q "Repository not found" /tmp/push_output.txt 2>/dev/null; then
+            echo ""
+            echo "❌ Le repository n'existe pas encore sur GitHub."
+            echo ""
+            echo "📋 Pour continuer :"
+            echo "1. Créez le repository sur GitHub : https://github.com/new"
+            echo "   - Nom : crypto_portfolio_guard"
+            echo "   - Ne cochez AUCUNE option (pas de README, .gitignore, etc.)"
+            echo "   - Cliquez sur 'Create repository'"
+            echo ""
+            echo "2. Relancez ce script : ./test_and_push.sh"
+            echo ""
+            echo "📖 Guide complet : cat CREATE_REPO.md"
+            exit 1
+        else
+            echo ""
+            echo "❌ Erreur lors du push. Vérifiez les messages ci-dessus."
+            exit 1
+        fi
+    fi
 else
     echo "❌ La clé SSH n'est pas encore ajoutée à GitHub."
     echo ""
