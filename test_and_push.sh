@@ -1,26 +1,30 @@
 #!/bin/bash
 # Script pour tester la connexion SSH et pousser vers GitHub
 
-set -e
-
 cd "$(dirname "$0")"
 
 echo "🔍 Test de la connexion SSH à GitHub..."
 echo ""
 
-# Test de la connexion SSH
-SSH_TEST=$(ssh -T git@github.com 2>&1)
+# Test de la connexion SSH (ignorer le code de sortie, SSH retourne 1 même en cas de succès)
+SSH_TEST=$(ssh -T git@github.com 2>&1) || true
 if echo "$SSH_TEST" | grep -q "successfully authenticated"; then
     echo "✅ Connexion SSH réussie !"
     echo ""
     echo "📦 Push vers GitHub..."
     
-    # Essayer le push
-    if git push -u origin main 2>&1 | tee /tmp/push_output.txt; then
+    # Essayer le push et capturer la sortie et le code de sortie
+    PUSH_OUTPUT=$(git push -u origin main 2>&1)
+    PUSH_EXIT_CODE=$?
+    
+    # Afficher la sortie
+    echo "$PUSH_OUTPUT"
+    
+    if [ $PUSH_EXIT_CODE -eq 0 ]; then
         echo ""
         echo "✅ Push réussi ! Vérifiez sur : https://github.com/ubntexd/crypto_portfolio_guard"
     else
-        if grep -q "Repository not found" /tmp/push_output.txt 2>/dev/null; then
+        if echo "$PUSH_OUTPUT" | grep -q "Repository not found"; then
             echo ""
             echo "❌ Le repository n'existe pas encore sur GitHub."
             echo ""
