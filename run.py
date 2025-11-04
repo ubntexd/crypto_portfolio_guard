@@ -31,9 +31,25 @@ def main():
         logger.log_info(f"Exchange configuré: {exchange_config.get('name', 'N/A')}")
         logger.log_info(f"Mode sandbox: {exchange_config.get('sandbox', False)}")
         
-        # TODO: Ajouter les modules suivants ici
+        # Module 1: Configuration & Logger
         logger.log_info("Module 1 (Configuration & Logger) - ✅ Opérationnel")
-        logger.log_info("En attente des modules suivants...")
+        
+        # Module 2: API Exchange
+        try:
+            from core.exchange import get_exchange
+            exchange = get_exchange()
+            
+            # Test de récupération d'un ticker (requête publique, pas besoin d'API key)
+            logger.log_info("Module 2 (API Exchange) - Test de connexion...")
+            ticker = exchange.fetch_ticker('BTC/USDT')
+            logger.log_info(f"Module 2 (API Exchange) - ✅ Opérationnel")
+            logger.log_info(f"  Test réussi: BTC/USDT = ${ticker['last']:.2f}")
+            
+        except Exception as e:
+            logger.log_warning(f"Module 2 (API Exchange) - ⚠️  Erreur: {e}")
+            logger.log_info("  (Normal si pas d'API key configurée ou pas de connexion internet)")
+        
+        # TODO: Ajouter les modules suivants ici
         
         return 0
         
